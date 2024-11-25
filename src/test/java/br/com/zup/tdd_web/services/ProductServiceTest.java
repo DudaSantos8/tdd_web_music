@@ -61,4 +61,21 @@ public class ProductServiceTest {
         Mockito.verify(productRepository, Mockito.times(1)).save(product);
     }
 
+    @Test
+    public void testWhenStorageDontFindTheProduct(){
+        Mockito.when(productRepository.findById(product.getId())).thenReturn(Optional.empty());
+
+        Assertions.assertThrows(RuntimeException.class, () -> productService.updateStorage(product.getId()));
+        Mockito.verify(productRepository, Mockito.times(0)).save(Mockito.any());
+    }
+
+    @Test
+    public void testWhenStorageDontHaveProductInStorage(){
+        Mockito.when(productRepository.findById(product.getId())).thenReturn(Optional.of(product));
+        product.setStorage(0);
+
+        Assertions.assertThrows(RuntimeException.class, () -> productService.updateStorage(product.getId()));
+        Mockito.verify(productRepository, Mockito.times(0)).save(Mockito.any());
+    }
+
 }
